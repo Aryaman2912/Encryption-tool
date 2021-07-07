@@ -4,13 +4,13 @@ import tkinter as tk
 from tkinter import font
 from tkinter.filedialog import asksaveasfilename, askopenfilename
 from tkinter.simpledialog import askstring
-import  tkinter.font
-import algorithms
 from algorithms.vigenere import vigenere_decrypt, vigenere_encrypt
-
+from algorithms.des import des_encrypt, des_decrypt, get_binary, get_subkeys
 # function that will be executed when encrypt button is pressed
 def encrypt():
     
+    plaintext = txt_edit.get("1.0",tk.END).strip().replace("\n","")
+    window.title('Encryptor')
     def vigenere():
         key = askstring("Key", "Please enter the key for encryption")
         ciphertext = vigenere_encrypt(plaintext, key)
@@ -20,12 +20,12 @@ def encrypt():
     def rsa():
         pass
     
-    plaintext = txt_edit.get("1.0",tk.END)
-    window.title('Encryptor')
-
     def des():
-        key = askstring("Key", "Please enter the key for encryption")
-        ciphertext = algorithms.des.encrypt(plaintext, key)
+        key = askstring("Key", "Please enter the 16 bit hexadecimal key for encryption")
+        subkeys = get_subkeys(get_binary(key))
+        ciphertext = des_encrypt(plaintext, subkeys)
+        txt_edit.delete("1.0",tk.END)
+        txt_edit.insert("1.0",ciphertext)
 
     popup = tk.Toplevel()
     popup.rowconfigure(1,minsize=50,weight=1)
@@ -42,12 +42,35 @@ def encrypt():
 
 # function that will be executed when decrypt button is pressed
 def decrypt():
-    ciphertext = txt_edit.get("1.0", tk.END)
+    ciphertext = txt_edit.get("1.0",tk.END).strip().replace("\n","")
     window.title("Decryptor")
-    key = askstring("Key", "Please enter the key for decryption")
-    plaintext = vigenere_decrypt(ciphertext, key)
-    txt_edit.delete("1.0",tk.END)
-    txt_edit.insert("1.0",plaintext)
+    def vigenere():
+        key = askstring("Key", "Please enter the key for decryption")
+        plaintext = vigenere_decrypt(ciphertext, key)
+        txt_edit.delete("1.0",tk.END)
+        txt_edit.insert("1.0",plaintext)
+    
+    def rsa():
+        pass
+
+    def des():
+        key = askstring("Key", "Please enter the 16 bit hexadecimal key for encryption")
+        subkeys = get_subkeys(get_binary(key))
+        plaintext = des_decrypt(ciphertext, subkeys[::-1])
+        txt_edit.delete("1.0",tk.END)
+        txt_edit.insert("1.0",plaintext)
+
+    popup = tk.Toplevel()
+    popup.rowconfigure(1,minsize=50,weight=1)
+    popup.columnconfigure(0,minsize=200,weight=1)
+
+    vigenere = tk.Button(master=popup,text='Vigenere',command=vigenere)
+    vigenere.grid(row = 0, column=0,sticky='nsew', padx=5, pady=5)
+    des = tk.Button(master=popup, text='DES',command=des)
+    des.grid(row=1, column=0, sticky='nsew',padx=5,pady=5)
+    rsa = tk.Button(master=popup, text='RSA', command=rsa)
+    rsa.grid(row = 2, column=0,sticky='nsew', padx=5, pady=5)
+    popup.mainloop()
 
 # function that will be executed when "Upload" button is pressed
 def open_file():
