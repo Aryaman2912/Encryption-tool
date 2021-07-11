@@ -234,6 +234,7 @@ def DES(plaintext, subkeys):
         ciphertext_hex += bin_to_hex[ciphertext[i:i+4]]
     return ciphertext_hex
 
+# function to encrypt a message given the subkeys
 def des_encrypt(message, subkeys):
     message = add_padding(message)
     ciphertext = ''
@@ -244,6 +245,7 @@ def des_encrypt(message, subkeys):
     
     return ciphertext
 
+# function to decrypt the ciphertext given the subkeys
 def des_decrypt(ciphertext, subkeys):
     plaintext = ''
     for i in range(0,len(ciphertext),16):
