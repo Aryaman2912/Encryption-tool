@@ -3,10 +3,10 @@
 # Some precalculated data needed for conversions and transformations
 
 from tkinter import Message
+from utils import *
 
-
-hex_to_bin = {'0': '0000', '1': '0001', '2': '0010', '3': '0011', '4': '0100', '5': '0101', '6': '0110', '7': '0111', '8': '1000', '9': '1001', 'a': '1010', 'b': '1011', 'c': '1100', 'd': '1101', 'e': '1110', 'f': '1111'}
-bin_to_hex = {'0000': '0', '0001': '1', '0010': '2', '0011': '3', '0100': '4', '0101': '5', '0110': '6', '0111': '7', '1000': '8', '1001': '9', '1010': 'a', '1011': 'b', '1100': 'c', '1101': 'd', '1110': 'e', '1111': 'f'}
+# hex_to_bin = {'0': '0000', '1': '0001', '2': '0010', '3': '0011', '4': '0100', '5': '0101', '6': '0110', '7': '0111', '8': '1000', '9': '1001', 'a': '1010', 'b': '1011', 'c': '1100', 'd': '1101', 'e': '1110', 'f': '1111'}
+# bin_to_hex = {'0000': '0', '0001': '1', '0010': '2', '0011': '3', '0100': '4', '0101': '5', '0110': '6', '0111': '7', '1000': '8', '1001': '9', '1010': 'a', '1011': 'b', '1100': 'c', '1101': 'd', '1110': 'e', '1111': 'f'}
 
 key_permutation1 = [57, 49, 41, 33, 25, 17, 9, 
                         1, 58, 50, 42, 34, 26, 18, 
@@ -94,50 +94,6 @@ perm = [16,  7, 20, 21,
         32, 27,  3,  9, 
         19, 13, 30,  6, 
         22, 11,  4, 25 ]
-
-# Function to convert an ascii message to hex
-def ascii_to_hex(message):
-
-    hex_message = ''
-    for c in message:
-        hex_message += hex(ord(c))[2:]
-
-    return hex_message
-
-# Function to convert a hex string to ascii
-def hex_to_ascii(hex_message):
-    
-    message = ''
-    for i in range(0,len(hex_message),2):
-        message += chr(int('0x' + hex_message[i:i+2], 16))
-    
-    return message
-# Function to convert a hexadecimal string to binary string
-def get_binary(hex_string):
-    bin_string = ''
-    for c in hex_string:
-        bin_string += hex_to_bin[c]
-    
-    return bin_string
-
-def add_padding(message):
-    while len(message) % 8 != 0:
-        message += ' '
-    return message
-
-def remove_padding(message):
-
-    while message[-1] == ' ':
-        message.pop()
-    
-    return message
-# Function to get xor of two binary strings
-def xor(s1, s2):
-    result = ''
-    for i in range(len(s1)):
-        result += str(int(not(s1[i] == s2[i])))
-    
-    return result
 
 def get_subkeys(key_bin):
     '''
@@ -240,7 +196,7 @@ def des_encrypt(message, subkeys):
     ciphertext = ''
     for i in range(0,len(message),8):
         block = message[i:i+8]
-        message_bin = get_binary(ascii_to_hex(block))
+        message_bin = hex_to_binary(ascii_to_hex(block))
         ciphertext += DES(message_bin,subkeys)
     
     return ciphertext
@@ -250,7 +206,7 @@ def des_decrypt(ciphertext, subkeys):
     plaintext = ''
     for i in range(0,len(ciphertext),16):
         block = ciphertext[i:i+16]
-        block_bin = get_binary(block)
+        block_bin = hex_to_binary(block)
         plaintext += hex_to_ascii(DES(block_bin,subkeys))
 
     return plaintext

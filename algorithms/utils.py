@@ -20,9 +20,93 @@ def hex_to_ascii(hex_message):
     return message
     
 # Function to convert a hexadecimal string to binary string
-def get_binary(hex_string):
+def hex_to_binary(hex_string):
     bin_string = ''
     for c in hex_string:
         bin_string += hex_to_bin[c]
     
     return bin_string
+
+# Function to convert a binary string to a hexadecimal string
+def binary_to_hex(bin_string):
+    
+    hex_string = ''
+    for i in range(0,len(bin_string),4):
+        hex_string += bin_to_hex[bin_string[i:i+4]]
+    
+    return hex_string
+
+# Function to convert an integer to a binary string
+def int_to_binary(value):
+    mapping = {0:'0',1:'1'}
+    bin_string = ''
+    while value:
+        bin_string += mapping[value % 2]
+        value = value // 2
+    while len(bin_string) % 4:
+        bin_string += '0'
+    return bin_string[::-1]
+
+# Function to perform modular exponentation
+def mod_exp(num, e, mod):
+    ciphertext = 1
+
+    num = num % mod
+    if num == 0:
+        return 0
+
+    while e > 0:
+        if e % 2:
+            ciphertext = (ciphertext * num) % mod
+        
+        e = e // 2
+        num = (num * num) % mod
+    
+    return ciphertext
+
+# Function to find the multiplicative inverse of e mod phi
+def multiplicative_inverse(e, phi):
+    d = 0
+    x1 = 0
+    x2 = 1
+    y1 = 1
+    temp = phi
+
+    while e > 0:
+        temp1 = temp // e
+        temp2 = temp - temp1 * e
+        temp = e
+        e = temp2
+
+        x = x2 - temp1 * x1
+        y = d - temp1 * y1
+
+        x2 = x1
+        x1 = x
+        d = y1
+        y1 = y
+    
+    if temp == 1:
+        return d + phi
+
+# Function to get xor of two binary strings
+def xor(s1, s2):
+    result = ''
+    for i in range(len(s1)):
+        result += str(int(not(s1[i] == s2[i])))
+    
+    return result
+
+# Function to add padding to a message by adding spaces at the end
+def add_padding(message):
+    while len(message) % 8 != 0:
+        message += ' '
+    return message
+
+# Function to remove padding from a message by removing any spaces at the end
+def remove_padding(message):
+
+    while message[-1] == ' ':
+        message.pop()
+    
+    return message

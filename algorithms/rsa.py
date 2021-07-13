@@ -1,53 +1,34 @@
-def mod_exp(num, e, mod):
-    ciphertext = 1
-
-    num = num % mod
-    if num == 0:
-        return 0
-
-    while e > 0:
-        if e % 2:
-            ciphertext = (ciphertext * num) % mod
-        
-        e = e // 2
-        num = (num * num) % mod
-    
-    return ciphertext
-
-def multiplicative_inverse(e, phi):
-    if e == 0:
-        return 0,1,phi
-    
-    x1, y1, gcd = multiplicative_inverse(phi % e, e)
-
-    x = y1 - (phi // e) * x1
-    y = x1
-
-    return x, y, gcd
+from utils import *
+from Crypto.Util import number
 
 def get_primes():
-    pass
+    p = number.getPrime(1024)
+    q = number.getPrime(1024)
+    return (p,q)
 
 def key_gen():
-    p1, p2 = get_primes()
+    p, q = get_primes()
+    n = p * q
+    phi = (p - 1) * (q - 1)
+    e = 65537
+    d = multiplicative_inverse(e,phi)
+    return ((e,n),(d,n))
 
-def encrypt(pk, message):
-    #ct = (message ^ e) mod phi
-    e, mod = pk
-    ciphertext = mod_exp(message,e,mod)
+
+def encrypt(public_key, message):
+    message_int = int(hex_to_binary(ascii_to_hex(message)),2)
+    e, mod = public_key
+    ciphertext = mod_exp(message_int,e,mod)
     return ciphertext
-    
-def decrypt(pk, ciphertext):
-    d, mod = pk
-    message = mod_exp(ciphertext, e, mod)
+
+def decrypt(private_key, ciphertext):
+    d, mod = private_key
+    message_int = mod_exp(ciphertext, d, mod)
+    message = hex_to_ascii(binary_to_hex(int_to_binary(message_int)))
     return message
 
 message = 'this is a message'
-p = 67280421310721
-q = 999999000001
-n = p * q
-phi = (p - 1) * (q - 1)
-mod = phi
-e = 65537
-d = multiplicative_inverse(e,phi)
-print(decrypt((d,phi),encrypt((e,phi),123524)))
+public_key, private_key = key_gen()
+ciphertext = encrypt(public_key,message)
+plaintext = decrypt(private_key,ciphertext)
+print(plaintext)
