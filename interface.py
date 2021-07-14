@@ -3,9 +3,11 @@
 import tkinter as tk
 from tkinter import font
 from tkinter.filedialog import asksaveasfilename, askopenfilename
-from tkinter.simpledialog import askstring
+from tkinter.simpledialog import askinteger, askstring
 from algorithms.vigenere import vigenere_decrypt, vigenere_encrypt
-from algorithms.des import des_encrypt, des_decrypt, get_binary, get_subkeys
+from algorithms.des import des_encrypt, des_decrypt, get_subkeys
+from algorithms.rsa import rsa_decrypt, rsa_encrypt
+from algorithms.utils import *
 # function that will be executed when encrypt button is pressed
 def encrypt():
     
@@ -18,17 +20,37 @@ def encrypt():
         txt_edit.insert("1.0", ciphertext)
     
     def rsa():
-        pass
+        key = []
+        plaintext = txt_edit.get("1.0",tk.END).strip().replace("\n","")
+        popup.title("RSA Encryption")
+        popup2 = tk.Toplevel()
+        popup2.title("Enter the public key")
+        popup2.rowconfigure(1,weight=1)
+        popup2.columnconfigure(0,weight=1)
+        vals = {0:'d',1:'n'}
+        for x in range(2):
+            e = tk.Text(popup2)
+            l = tk.Label(popup2,text=vals[x])
+            e.grid(row=x,column=1,sticky='nsew',padx=5,pady=5)
+            l.grid(row=x,column=0,sticky='ns',padx=5,pady=5)
+            x = (e.get("1.0",tk.END).strip().replace("\n",''))
+            print(x)
+            key.append(x)
+        button = tk.Button(popup2,text="Encrypt",command=lambda:None)
+        button.grid(row=2,column=0,pady=20,padx=40)
+        ciphertext = rsa_encrypt((key[0],key[1]),plaintext)
+        txt_edit.delete("1.0", tk.END)
+        txt_edit.insert("1.0",ciphertext)
     
     def des():
         key = askstring("Key", "Please enter the 16 bit hexadecimal key for encryption")
-        subkeys = get_subkeys(get_binary(key))
+        subkeys = get_subkeys(hex_to_binary(key))
         ciphertext = des_encrypt(plaintext, subkeys)
         txt_edit.delete("1.0",tk.END)
         txt_edit.insert("1.0",ciphertext)
 
     popup = tk.Toplevel()
-    popup.rowconfigure(1,minsize=50,weight=1)
+    popup.rowconfigure(1,minsize=60,weight=1)
     popup.columnconfigure(0,minsize=200,weight=1)
 
     vigenere = tk.Button(master=popup,text='Vigenere',command=vigenere)
@@ -55,13 +77,13 @@ def decrypt():
 
     def des():
         key = askstring("Key", "Please enter the 16 bit hexadecimal key for encryption")
-        subkeys = get_subkeys(get_binary(key))
+        subkeys = get_subkeys(hex_to_binary(key))
         plaintext = des_decrypt(ciphertext, subkeys[::-1])
         txt_edit.delete("1.0",tk.END)
         txt_edit.insert("1.0",plaintext)
 
     popup = tk.Toplevel()
-    popup.rowconfigure(1,minsize=50,weight=1)
+    popup.rowconfigure(1,minsize=60,weight=1)
     popup.columnconfigure(0,minsize=200,weight=1)
 
     vigenere = tk.Button(master=popup,text='Vigenere',command=vigenere)
@@ -124,7 +146,7 @@ btn_encrypt.grid(row=3,column=0,sticky="ew",padx=5, pady=5)
 fr_buttons.grid(row=0, column=0,sticky="ns")
 txt_edit.grid(row=0, column=1, sticky="nsew")
 
-Font_tuple = ("Comic Sans MS", 20)
-txt_edit.configure(font=Font_tuple)
+# Font_tuple = ("Comic Sans MS", 20)
+# txt_edit.configure(font=Font_tuple)
 
 window.mainloop()
