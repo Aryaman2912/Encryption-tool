@@ -8,6 +8,7 @@ from algorithms.vigenere import vigenere_decrypt, vigenere_encrypt
 from algorithms.des import des_encrypt, des_decrypt, get_subkeys
 from algorithms.rsa import rsa_decrypt, rsa_encrypt
 from algorithms.utils import *
+
 # function that will be executed when encrypt button is pressed
 def encrypt():
     
@@ -20,27 +21,12 @@ def encrypt():
         txt_edit.insert("1.0", ciphertext)
     
     def rsa():
-        key = []
-        plaintext = txt_edit.get("1.0",tk.END).strip().replace("\n","")
-        popup.title("RSA Encryption")
-        popup2 = tk.Toplevel()
-        popup2.title("Enter the public key")
-        popup2.rowconfigure(1,weight=1)
-        popup2.columnconfigure(0,weight=1)
-        vals = {0:'d',1:'n'}
-        for x in range(2):
-            e = tk.Text(popup2)
-            l = tk.Label(popup2,text=vals[x])
-            e.grid(row=x,column=1,sticky='nsew',padx=5,pady=5)
-            l.grid(row=x,column=0,sticky='ns',padx=5,pady=5)
-            x = (e.get("1.0",tk.END).strip().replace("\n",''))
-            print(x)
-            key.append(x)
-        button = tk.Button(popup2,text="Encrypt",command=lambda:None)
-        button.grid(row=2,column=0,pady=20,padx=40)
-        ciphertext = rsa_encrypt((key[0],key[1]),plaintext)
-        txt_edit.delete("1.0", tk.END)
+        e = askinteger("Input the public key","Enter the value of e")
+        n = askinteger("Input the public key","Enter the value of n")
+        ciphertext = rsa_encrypt((e,n),plaintext)
+        txt_edit.delete("1.0",tk.END)
         txt_edit.insert("1.0",ciphertext)
+
     
     def des():
         key = askstring("Key", "Please enter the 16 bit hexadecimal key for encryption")
@@ -73,7 +59,11 @@ def decrypt():
         txt_edit.insert("1.0",plaintext)
     
     def rsa():
-        pass
+        d = askinteger("Input the private key","Enter the value of d")
+        n = askinteger("Input the private key","Enter the value of n")
+        plaintext = rsa_decrypt((d,n),int(ciphertext))
+        txt_edit.delete("1.0",tk.END)
+        txt_edit.insert("1.0",plaintext)
 
     def des():
         key = askstring("Key", "Please enter the 16 bit hexadecimal key for encryption")
