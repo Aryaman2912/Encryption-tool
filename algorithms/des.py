@@ -4,7 +4,7 @@
 
 from tkinter import Message
 from algorithms.utils import *
-
+from random import SystemRandom
 # hex_to_bin = {'0': '0000', '1': '0001', '2': '0010', '3': '0011', '4': '0100', '5': '0101', '6': '0110', '7': '0111', '8': '1000', '9': '1001', 'a': '1010', 'b': '1011', 'c': '1100', 'd': '1101', 'e': '1110', 'f': '1111'}
 # bin_to_hex = {'0000': '0', '0001': '1', '0010': '2', '0011': '3', '0100': '4', '0101': '5', '0110': '6', '0111': '7', '1000': '8', '1001': '9', '1010': 'a', '1011': 'b', '1100': 'c', '1101': 'd', '1110': 'e', '1111': 'f'}
 
@@ -210,3 +210,9 @@ def des_decrypt(ciphertext, subkeys):
         plaintext += hex_to_ascii(DES(block_bin,subkeys))
 
     return plaintext
+
+def des_key_gen():
+    cryptogen = SystemRandom()
+    mp = {0:'0', 1:'1', 2:'2', 3:'3', 4:'4', 5:'5', 6:'6', 7:'7', 8:'8', 9:'9', 10:'a', 11:'b', 12:'c', 13:'d', 14:'e', 15:'f'}
+    key = ''.join(mp[cryptogen.randrange(16)] for i in range(16))
+    return key

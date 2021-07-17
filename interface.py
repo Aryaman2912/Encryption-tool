@@ -1,13 +1,39 @@
 # Import required packages and modules
 
 import tkinter as tk
-from tkinter import font
+from tkinter import font,messagebox
 from tkinter.filedialog import asksaveasfilename, askopenfilename
 from tkinter.simpledialog import askinteger, askstring
-from algorithms.vigenere import vigenere_decrypt, vigenere_encrypt
-from algorithms.des import des_encrypt, des_decrypt, get_subkeys
-from algorithms.rsa import rsa_decrypt, rsa_encrypt
+from algorithms.vigenere import vigenere_decrypt, vigenere_encrypt, vigenere_key_gen
+from algorithms.des import des_encrypt, des_decrypt, get_subkeys, des_key_gen
+from algorithms.rsa import rsa_key_gen, rsa_decrypt, rsa_encrypt
 from algorithms.utils import *
+
+# function that will be executed when "Upload" button is pressed
+def open_file():
+    filepath = askopenfilename(
+        filetypes = [("Text Files","*.txt"), ("All Files","*.*")]
+    )
+    if not filepath:
+        return
+    txt_edit.delete("1.0", tk.END)
+    with open(filepath,"r") as input_file:
+        text = input_file.read()
+        txt_edit.insert(tk.END, text)
+    window.title(f"Text Editor - {filepath}")
+
+# function that will be executed when "Download" button is pressed
+def save_file():
+    filepath = asksaveasfilename(
+        defaultextension = '.txt',
+        filetypes = [("Text Files","*.txt"), ("All Files","*.*")],
+    )
+    if not filepath:
+        return
+    with open(filepath,"w") as output_file:
+        text = txt_edit.get(1.0, tk.END)
+        output_file.write(text)
+    window.title(f'Text Editor - {filepath}')
 
 # function that will be executed when encrypt button is pressed
 def encrypt():
@@ -84,31 +110,26 @@ def decrypt():
     rsa.grid(row = 2, column=0,sticky='nsew', padx=5, pady=5)
     popup.mainloop()
 
-# function that will be executed when "Upload" button is pressed
-def open_file():
-    filepath = askopenfilename(
-        filetypes = [("Text Files","*.txt"), ("All Files","*.*")]
-    )
-    if not filepath:
-        return
-    txt_edit.delete("1.0", tk.END)
-    with open(filepath,"r") as input_file:
-        text = input_file.read()
-        txt_edit.insert(tk.END, text)
-    window.title(f"Text Editor - {filepath}")
+def generate_keys():
+    def vigenere():
+        key = vigenere_key_gen()
+        print(key)
+    def des():
+        key = des_key_gen()
+        messagebox.showinfo("Key for DES:",key)
+    def rsa():
+        key_pair = rsa_key_gen()
+    popup = tk.Toplevel()
+    popup.rowconfigure(1,minsize=60,weight=1)
+    popup.columnconfigure(0,minsize=200,weight=1)
 
-# function that will be executed when "Download" button is pressed
-def save_file():
-    filepath = asksaveasfilename(
-        defaultextension = '.txt',
-        filetypes = [("Text Files","*.txt"), ("All Files","*.*")],
-    )
-    if not filepath:
-        return
-    with open(filepath,"w") as output_file:
-        text = txt_edit.get(1.0, tk.END)
-        output_file.write(text)
-    window.title(f'Text Editor - {filepath}')
+    vigenere = tk.Button(master=popup,text='Vigenere',command=vigenere)
+    vigenere.grid(row = 0, column=0,sticky='nsew', padx=5, pady=5)
+    des = tk.Button(master=popup, text='DES',command=des)
+    des.grid(row=1, column=0, sticky='nsew',padx=5,pady=5)
+    rsa = tk.Button(master=popup, text='RSA', command=rsa)
+    rsa.grid(row = 2, column=0,sticky='nsew', padx=5, pady=5)
+    popup.mainloop()
 
 # define window, and set its configurations
 window = tk.Tk()
@@ -133,6 +154,8 @@ btn_encrypt.grid(row=2,column=0,sticky="ew",padx=5, pady=5)
 btn_encrypt = tk.Button(fr_buttons, text="Decrypt", command=decrypt)
 btn_encrypt.grid(row=3,column=0,sticky="ew",padx=5, pady=5)
 
+btn_keygen = tk.Button(fr_buttons, text="Generate keys", command=generate_keys)
+btn_keygen.grid(row=4,column=0,sticky="ew",padx=5, pady=5)
 fr_buttons.grid(row=0, column=0,sticky="ns")
 txt_edit.grid(row=0, column=1, sticky="nsew")
 

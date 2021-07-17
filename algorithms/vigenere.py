@@ -57,3 +57,6 @@ def vigenere_decrypt(ciphertext, key):
 
     # Convert the list to string and return the ciphertext
     return (''.join(plaintext))
+
+def vigenere_key_gen():
+    pass
