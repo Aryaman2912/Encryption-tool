@@ -1,3 +1,5 @@
+from random import SystemRandom
+
 def vigenere_encrypt(plaintext, key):
     
     # list to store ciphertext
@@ -59,4 +61,14 @@ def vigenere_decrypt(ciphertext, key):
     return (''.join(plaintext))
 
 def vigenere_key_gen():
-    pass
+    cryptogen = SystemRandom()
+    len = cryptogen.randrange(7,20)
+    key = ''
+    for _ in range(len):
+        uppercase = cryptogen.randrange(2)
+        if uppercase:
+            key += chr(cryptogen.randrange(65,91))
+        else:
+            key += chr(cryptogen.randrange(97,123))
+        
+    return key

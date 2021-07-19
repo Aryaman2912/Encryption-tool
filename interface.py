@@ -1,7 +1,6 @@
 # Import required packages and modules
 
 import tkinter as tk
-from tkinter import font,messagebox
 from tkinter.filedialog import asksaveasfilename, askopenfilename
 from tkinter.simpledialog import askinteger, askstring
 from algorithms.vigenere import vigenere_decrypt, vigenere_encrypt, vigenere_key_gen
@@ -62,7 +61,7 @@ def encrypt():
         txt_edit.insert("1.0",ciphertext)
 
     popup = tk.Toplevel()
-    popup.rowconfigure(1,minsize=60,weight=1)
+    popup.rowconfigure(1,minsize=20,weight=1)
     popup.columnconfigure(0,minsize=200,weight=1)
 
     vigenere = tk.Button(master=popup,text='Vigenere',command=vigenere)
@@ -99,30 +98,45 @@ def decrypt():
         txt_edit.insert("1.0",plaintext)
 
     popup = tk.Toplevel()
-    popup.rowconfigure(1,minsize=60,weight=1)
+    popup.rowconfigure(1,minsize=20,weight=1)
     popup.columnconfigure(0,minsize=200,weight=1)
-
     vigenere = tk.Button(master=popup,text='Vigenere',command=vigenere)
     vigenere.grid(row = 0, column=0,sticky='nsew', padx=5, pady=5)
     des = tk.Button(master=popup, text='DES',command=des)
-    des.grid(row=1, column=0, sticky='nsew',padx=5,pady=5)
+    des.grid(row=1, column=0, sticky='ew',padx=5,pady=5)
     rsa = tk.Button(master=popup, text='RSA', command=rsa)
     rsa.grid(row = 2, column=0,sticky='nsew', padx=5, pady=5)
     popup.mainloop()
 
+# Function that will be executed when "generate keys" button is pressed
 def generate_keys():
+    window.title("Generate Keys")
     def vigenere():
         key = vigenere_key_gen()
-        print(key)
+        txt_edit.delete("1.0",tk.END)
+        text = "Generated ASCII key for Vigenere encryption is: \n\n" + key + "\n\n"
+        popup.destroy()
+        txt_edit.insert("1.0",text)
     def des():
         key = des_key_gen()
-        messagebox.showinfo("Key for DES:",key)
+        txt_edit.delete("1.0",tk.END)
+        text = "Generated 16 bit hexadecimal key for DES encryption is: \n\n" + key + "\n\n"
+        popup.destroy()
+        txt_edit.insert("1.0",text)
     def rsa():
         key_pair = rsa_key_gen()
+        (e,n),(d,n) = key_pair
+        txt_edit.delete("1.0",tk.END)
+        text = "Generated public-private key pair for RSA encryption is: \n\n"
+        text += "Public key:\n\n" + "n:\n" + str(n) + "\n\ne:\n" + str(e) + "\n\n"
+        text += "Private key:\n\n" + "n:\n" + str(d) + "\n\nd:\n" + str(d) + "\n\n"
+        popup.destroy()
+        txt_edit.insert("1.0",text)
+    
     popup = tk.Toplevel()
-    popup.rowconfigure(1,minsize=60,weight=1)
+    popup.rowconfigure(1,minsize=20,weight=1)
     popup.columnconfigure(0,minsize=200,weight=1)
-
+    popup.title("Generate keys")
     vigenere = tk.Button(master=popup,text='Vigenere',command=vigenere)
     vigenere.grid(row = 0, column=0,sticky='nsew', padx=5, pady=5)
     des = tk.Button(master=popup, text='DES',command=des)
@@ -158,8 +172,5 @@ btn_keygen = tk.Button(fr_buttons, text="Generate keys", command=generate_keys)
 btn_keygen.grid(row=4,column=0,sticky="ew",padx=5, pady=5)
 fr_buttons.grid(row=0, column=0,sticky="ns")
 txt_edit.grid(row=0, column=1, sticky="nsew")
-
-# Font_tuple = ("Comic Sans MS", 20)
-# txt_edit.configure(font=Font_tuple)
 
 window.mainloop()
